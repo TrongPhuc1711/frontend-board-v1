@@ -259,14 +259,39 @@ export default function BoardPage() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Table & Mobile Cards */}
       {filtered.length > 0 && (
         <>
-          <p className="results-count muted">
-            {filtered.length} request{filtered.length !== 1 ? "s" : ""}
-            {" "}from {formatDateDisplay(from)} to {formatDateDisplay(to)}
-          </p>
-          <div className="table-scroll" role="region" aria-label="Requests table" tabIndex={0}>
+          <div className="board-results-bar">
+            <p className="results-count muted">
+              {filtered.length} request{filtered.length !== 1 ? "s" : ""}
+              {" "}from {formatDateDisplay(from)} to {formatDateDisplay(to)}
+            </p>
+
+            {/* Mobile sort controls */}
+            <div className="mobile-sort-bar mobile-only" role="toolbar" aria-label="Sort requests">
+              <span className="mobile-sort-label">Sort:</span>
+              <button
+                type="button"
+                className={`sort-pill ${sortField === "created" ? "active" : ""}`}
+                onClick={() => toggleSort("created")}
+                aria-pressed={sortField === "created"}
+              >
+                Created {sortField === "created" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </button>
+              <button
+                type="button"
+                className={`sort-pill ${sortField === "due" ? "active" : ""}`}
+                onClick={() => toggleSort("due")}
+                aria-pressed={sortField === "due"}
+              >
+                Due {sortField === "due" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="table-scroll desktop-only" role="region" aria-label="Requests table" tabIndex={0}>
             <table aria-label="Helpdesk requests">
               <thead>
                 <tr>
@@ -347,6 +372,71 @@ export default function BoardPage() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="mobile-cards-list mobile-only" role="region" aria-label="Requests cards list">
+            {filtered.map((r) => {
+              const overdue = checkOverdue(r);
+              return (
+                <article
+                  key={r.id}
+                  className={`mobile-request-card${overdue ? " overdue-card" : ""}`}
+                  onClick={() => navigate(`/request/${r.id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate(`/request/${r.id}`);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="link"
+                  aria-label={`Request ${r.ref}: ${r.title}`}
+                >
+                  <div className="card-header-row">
+                    <span className="card-site-name">{getSiteName(r.site_id)}</span>
+                    <div className="card-status-badges">
+                      <span className={`badge status-${r.status}`}>{r.status}</span>
+                      {overdue && (
+                        <span className="overdue-dot" title="Overdue" aria-label="Overdue">
+                          🔴
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card-title-row">
+                    <span className="card-ref">{r.ref}</span>
+                    <h2 className="card-title">{r.title}</h2>
+                  </div>
+
+                  <div className="card-meta-grid">
+                    <div className="card-meta-item">
+                      <span className="card-meta-label">Priority</span>
+                      <span className={`badge priority-${(r.priority ?? "none").toLowerCase()}`}>
+                        {r.priority ?? "—"}
+                      </span>
+                    </div>
+                    <div className="card-meta-item">
+                      <span className="card-meta-label">Assignee</span>
+                      <span className="card-meta-value">{getStaffName(r.assignee?.id)}</span>
+                    </div>
+                    <div className="card-meta-item">
+                      <span className="card-meta-label">Created</span>
+                      <span className="card-meta-value">
+                        {formatUtcInTz(r.created_at, getSiteTimezone(r.site_id))}
+                      </span>
+                    </div>
+                    <div className="card-meta-item">
+                      <span className="card-meta-label">Due</span>
+                      <span className="card-meta-value">
+                        {r.due_on ? formatDateDisplay(r.due_on) : "—"}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </>
       )}

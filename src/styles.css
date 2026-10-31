@@ -221,7 +221,8 @@ tbody tr:focus-visible {
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 0.85rem;
   color: var(--primary);
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .cell-title {
@@ -637,10 +638,181 @@ tbody tr:focus-visible {
   font-style: italic;
 }
 
+/* --- Visibility utilities --- */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block;
+}
+
+/* --- Mobile Sort Bar & Cards --- */
+.board-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0 10px;
+}
+
+.mobile-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-sort-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sort-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s;
+}
+
+.sort-pill.active {
+  background: #e8f4fd;
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.mobile-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-request-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobile-request-card:active,
+.mobile-request-card:focus-visible {
+  border-color: var(--primary);
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.mobile-request-card.overdue-card {
+  border-left: 4px solid var(--danger);
+  background: #fffafa;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-site-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card-status-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card-ref {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+  margin: 0;
+  word-break: break-word;
+}
+
+.card-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.card-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-meta-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.card-meta-value {
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   html {
-    font-size: 13px;
+    font-size: 14px;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
   }
 
   .board-page,
@@ -651,31 +823,53 @@ tbody tr:focus-visible {
   .board-title-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
 
+  /* 2-column grid for filters on mobile */
   .filters-bar {
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .filter-group {
+    width: 100%;
+    min-width: 0;
   }
 
   .filter-group input,
   .filter-group select {
-    min-width: unset;
     width: 100%;
+    min-width: 0;
+    min-height: 44px; /* touch-friendly */
+    font-size: 16px; /* Prevents auto-zoom on iOS */
   }
 
   .detail-meta {
     grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .back-btn {
+    min-height: 44px;
+    padding: 10px 16px;
   }
 
   .timeline-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
 }
 
 @media (max-width: 480px) {
-  .detail-meta {
+  .filters-bar {
     grid-template-columns: 1fr;
+  }
+
+  .card-meta-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
